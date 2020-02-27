@@ -1,0 +1,39 @@
+
+@RequestMapping("/report/eventReport")
+	public List<EventReportWrapper> getEventsReport(@RequestHeader String role,@RequestHeader String id,HttpServletRequest request){
+		List<EventReportWrapper> eventReportWrapper= eventSummaryService.getEventsReport(role, id);
+		 return eventReportWrapper;
+		
+	}
+
+
+//EventSummaryService
+
+public List<EventReportWrapper> getEventsReport(String role,String id){
+	List<EventReportWrapper> eventReportWrapperList=new ArrayList<EventReportWrapper>();
+	List<EventDetailResponse> eventDetails = getEventDetails(role,id);
+	//eventReportWrapper.setEventSummary(eventDetails);
+	for(EventDetailResponse data:eventDetails){
+		//Integer eventFeedback = feedBackService.getEventFeedback(data.getEventId());
+		EventReportWrapper eventReportWrapper=new EventReportWrapper();
+		eventReportWrapper.setEventRating(4);
+		eventReportWrapper.setEventSummary(data);
+		eventReportWrapperList.add(eventReportWrapper);
+	}
+	
+	return eventReportWrapperList;
+	
+}
+
+//feedback service
+
+public Integer getEventFeedback(String eventId){
+		return fRepository.getEventfeedback(eventId).getRating();
+		
+	}
+
+//feedback repository
+@Query(value="SELECT score as rating FROM fmsdb.volunteer_feedback where event_id =?1", nativeQuery=true)
+	public IScore getEventfeedback(String eventId);
+
+
